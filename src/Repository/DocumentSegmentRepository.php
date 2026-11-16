@@ -2,10 +2,10 @@
 
 namespace Wexample\SymfonyDocument\Repository;
 
+use Symfony\Bridge\Doctrine\Types\UuidType;
 use Wexample\SymfonyDocument\Entity\Document;
 use Wexample\SymfonyDocument\Entity\DocumentSegment;
 use Wexample\SymfonyDocument\Entity\Traits\Manipulator\DocumentSegmentEntityManipulatorTrait;
-use Symfony\Bridge\Doctrine\Types\UuidType;
 use Wexample\SymfonyHelpers\Repository\AbstractRepository;
 use Wexample\SymfonyPerson\Entity\Person;
 
