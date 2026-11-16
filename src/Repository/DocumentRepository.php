@@ -24,6 +24,14 @@ class DocumentRepository extends AbstractRepository
     }
 
     /**
+     * The document an import already brought from that source, if any.
+     */
+    public function findOneBySourceKey(string $sourceKey): ?Document
+    {
+        return $this->findOneBy(['sourceKey' => $sourceKey]);
+    }
+
+    /**
      * The most recently delivered first; those with no date last, by when they were
      * recorded.
      *

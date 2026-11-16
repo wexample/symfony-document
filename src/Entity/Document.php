@@ -58,6 +58,15 @@ class Document extends AbstractEntity implements Stringable
     protected ?string $sourceUrl = null;
 
     /**
+     * What the document is called where it was imported from, as `<provider>:<id>`
+     * (`vie-publique:276543`, `wikisource:Discours_sur_la_misère`): an import finds by
+     * it what it already brought, and does not bring it twice. Null for a document
+     * written here.
+     */
+    #[ORM\Column(type: Types::STRING, length: 255, unique: true, nullable: true)]
+    protected ?string $sourceKey = null;
+
+    /**
      * @var Collection<int, DocumentSegment>
      */
     #[ORM\OneToMany(mappedBy: 'document', targetEntity: DocumentSegment::class, cascade: ['persist'], orphanRemoval: true)]
@@ -158,6 +167,18 @@ class Document extends AbstractEntity implements Stringable
     ): static {
         $this->sourceLabel = $label;
         $this->sourceUrl = $url;
+
+        return $this;
+    }
+
+    public function getSourceKey(): ?string
+    {
+        return $this->sourceKey;
+    }
+
+    public function setSourceKey(?string $sourceKey): static
+    {
+        $this->sourceKey = $sourceKey;
 
         return $this;
     }
