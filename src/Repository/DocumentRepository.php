@@ -37,14 +37,17 @@ class DocumentRepository extends AbstractRepository
      *
      * @return list<Document>
      */
-    public function findLatest(int $limit = 50): array
-    {
+    public function findLatest(
+        int $limit = 50,
+        int $offset = 0
+    ): array {
         // DQL has no NULLS LAST, and PostgreSQL puts nulls first in a descending order.
         return $this->createQueryBuilder('document')
             ->addSelect('CASE WHEN document.dateDelivered IS NULL THEN 1 ELSE 0 END AS HIDDEN undated')
             ->orderBy('undated', 'ASC')
             ->addOrderBy('document.dateDelivered', 'DESC')
             ->addOrderBy('document.dateCreated', 'DESC')
+            ->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
