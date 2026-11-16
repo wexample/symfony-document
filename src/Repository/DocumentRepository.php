@@ -2,10 +2,14 @@
 
 namespace Wexample\SymfonyDocument\Repository;
 
+use Doctrine\ORM\QueryBuilder;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 use Wexample\SymfonyDocument\Entity\Document;
+use Wexample\SymfonyDocument\Entity\DocumentSegment;
 use Wexample\SymfonyDocument\Entity\Traits\Manipulator\DocumentEntityManipulatorTrait;
 use Wexample\SymfonyDocument\Enum\DocumentKind;
 use Wexample\SymfonyHelpers\Repository\AbstractRepository;
+use Wexample\SymfonyPerson\Entity\Person;
 
 /**
  * @method Document|null find($id, $lockMode = null, $lockVersion = null)
@@ -29,6 +33,40 @@ class DocumentRepository extends AbstractRepository
     public function findOneBySourceKey(string $sourceKey): ?Document
     {
         return $this->findOneBy(['sourceKey' => $sourceKey]);
+    }
+
+    /**
+     * The documents where $person speaks, the most recent first.
+     *
+     * @return list<Document>
+     */
+    public function findByPerson(
+        Person $person,
+        int $limit = 50,
+        int $offset = 0
+    ): array {
+        return $this->queryByPerson($person)
+            ->orderBy('document.dateDelivered', 'DESC')
+            ->addOrderBy('document.dateCreated', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countByPerson(Person $person): int
+    {
+        return (int) $this->queryByPerson($person)
+            ->select('COUNT(document.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    private function queryByPerson(Person $person): QueryBuilder
+    {
+        return $this->createQueryBuilder('document')
+            ->where(sprintf('EXISTS (SELECT 1 FROM %s segment WHERE segment.document = document AND segment.person = :person)', DocumentSegment::class))
+            ->setParameter('person', $person->getId(), UuidType::NAME);
     }
 
     /**

@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use Stringable;
 use Wexample\SymfonyDocument\Repository\DocumentSegmentRepository;
 use Wexample\SymfonyHelpers\Entity\AbstractEntity;
+use Wexample\SymfonyPerson\Entity\Person;
 
 /**
  * A passage of a document, between two character offsets of its content, and who
@@ -37,6 +38,14 @@ class DocumentSegment extends AbstractEntity implements Stringable
      */
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     protected ?string $speaker;
+
+    /**
+     * Who the speaker is, when the source says it: `speaker` stays what the text
+     * reads (« M. le président »), this is the person behind it.
+     */
+    #[ORM\ManyToOne(targetEntity: Person::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    protected ?Person $person = null;
 
     #[ORM\Column(type: Types::INTEGER)]
     protected int $startOffset;
@@ -95,6 +104,18 @@ class DocumentSegment extends AbstractEntity implements Stringable
     public function setSpeaker(?string $speaker): static
     {
         $this->speaker = $speaker;
+
+        return $this;
+    }
+
+    public function getPerson(): ?Person
+    {
+        return $this->person;
+    }
+
+    public function setPerson(?Person $person): static
+    {
+        $this->person = $person;
 
         return $this;
     }
