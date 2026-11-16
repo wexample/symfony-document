@@ -1,6 +1,6 @@
 # symfony-document
 
-Version: 2.1.0
+Version: 3.0.0
 
 Documents kept for their text: a speech, an article, a transcribed podcast, dated, attributed to their source, their text fixed once written and cut into the passages of each voice
 
