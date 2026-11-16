@@ -1,7 +1,7 @@
 {
   "name": "wexample/symfony-document",
   "description": "Documents kept for their text: a speech, an article, a transcribed podcast, dated, attributed to their source, their text fixed once written and cut into the passages of each voice",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "type": "library",
   "license": "MIT",
   "autoload": {
@@ -18,7 +18,7 @@
   "require": {
     "php": ">=8.5",
     "wexample/symfony-helpers": ">=19.3.0",
-    "wexample/symfony-person": ">=1.0.1"
+    "wexample/symfony-person": ">=2.0.0"
   },
   "repositories": [
     {
