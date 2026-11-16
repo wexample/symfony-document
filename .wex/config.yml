@@ -1,0 +1,7 @@
+domain: symfony-document.wex
+global:
+  name: symfony-document
+  type: php-package
+  version: 1.0.0
+wex:
+  version: 6.0.183
