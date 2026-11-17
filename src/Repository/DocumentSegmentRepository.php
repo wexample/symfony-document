@@ -55,4 +55,41 @@ class DocumentSegmentRepository extends AbstractRepository
             'last' => $row['last'],
         ];
     }
+
+    /**
+     * How much each of $people has spoken, in one query: their interventions
+     * and the last day they were heard, keyed by the person's id. Someone never
+     * heard is missing from it.
+     *
+     * @param Person[] $people
+     * @return array<string, array{segments: int, last: ?string}>
+     */
+    public function getPeopleStats(array $people): array
+    {
+        if ([] === $people) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('segment')
+            ->select('IDENTITY(segment.person) AS person')
+            ->addSelect('COUNT(segment.id) AS segments')
+            ->addSelect('MAX(document.dateDelivered) AS last')
+            ->innerJoin('segment.document', 'document')
+            ->where('segment.person IN (:people)')
+            ->setParameter('people', $people)
+            ->groupBy('segment.person')
+            ->getQuery()
+            ->getArrayResult();
+
+        $stats = [];
+
+        foreach ($rows as $row) {
+            $stats[(string) $row['person']] = [
+                'segments' => (int) $row['segments'],
+                'last' => $row['last'],
+            ];
+        }
+
+        return $stats;
+    }
 }
