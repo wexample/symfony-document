@@ -1,7 +1,7 @@
 {
   "name": "wexample/symfony-document",
   "description": "Documents kept for their text: a speech, an article, a transcribed podcast, dated, attributed to their source, their text fixed once written and cut into the passages of each voice",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "type": "library",
   "license": "MIT",
   "autoload": {
