@@ -36,16 +36,18 @@ class DocumentRepository extends AbstractRepository
     }
 
     /**
-     * The documents where $person speaks, the most recent first.
+     * The documents where $person speaks, the most recent first; of one kind
+     * only when $kind says it.
      *
      * @return list<Document>
      */
     public function findByPerson(
         Person $person,
         int $limit = 50,
-        int $offset = 0
+        int $offset = 0,
+        ?DocumentKind $kind = null
     ): array {
-        return $this->queryByPerson($person)
+        return $this->queryByPerson($person, $kind)
             ->orderBy('document.dateDelivered', 'DESC')
             ->addOrderBy('document.dateCreated', 'DESC')
             ->setFirstResult($offset)
@@ -54,19 +56,29 @@ class DocumentRepository extends AbstractRepository
             ->getResult();
     }
 
-    public function countByPerson(Person $person): int
-    {
-        return (int) $this->queryByPerson($person)
+    public function countByPerson(
+        Person $person,
+        ?DocumentKind $kind = null
+    ): int {
+        return (int) $this->queryByPerson($person, $kind)
             ->select('COUNT(document.id)')
             ->getQuery()
             ->getSingleScalarResult();
     }
 
-    private function queryByPerson(Person $person): QueryBuilder
-    {
-        return $this->createQueryBuilder('document')
+    private function queryByPerson(
+        Person $person,
+        ?DocumentKind $kind
+    ): QueryBuilder {
+        $query = $this->createQueryBuilder('document')
             ->where(sprintf('EXISTS (SELECT 1 FROM %s segment WHERE segment.document = document AND segment.person = :person)', DocumentSegment::class))
             ->setParameter('person', $person->getId(), UuidType::NAME);
+
+        if (null !== $kind) {
+            $query->andWhere('document.kind = :kind')->setParameter('kind', $kind->value);
+        }
+
+        return $query;
     }
 
     /**
